@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     }
 
     /** Print the Server's Reply **/
-    printf("Message from the Server: %s", buffer);
+    printf("%s", buffer);
 
     return 0;
 }
