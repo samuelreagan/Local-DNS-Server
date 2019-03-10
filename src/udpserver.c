@@ -81,6 +81,10 @@ int main(int argc, char** argv) {
             error("ERROR Retrieving Client Address (inet_ntoa).");
         }
 
+        printf("Server Received Datagram From: %s (%s)\n",client->h_name, hostAddr);
+        //printf("Client Port Number: %d\n",clientAddr.sin_port);
+        printf("Server Received %d/%d Bytes: %s\n", (int)strlen(buffer), n, buffer);
+
         //Check Cache
 
         //Retrieve Datagram
@@ -92,10 +96,6 @@ int main(int argc, char** argv) {
             puts(inet_ntoa(*(struct in_addr*)queryHost->h_addr_list[i]));
         }
         fputc('\n', stdout);
-
-        printf("Server Received Datagram From: %s (%s)\n",client->h_name, hostAddr);
-        //printf("Client Port Number: %d\n",clientAddr.sin_port);
-        printf("Server Received %d/%d Bytes: %s\n", (int)strlen(buffer), n, buffer);
 
         /** Send Input Back to Client **/
         n = sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr*)&clientAddr, clientLength);
