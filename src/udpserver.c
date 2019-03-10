@@ -88,14 +88,20 @@ int main(int argc, char** argv) {
         //Check Cache
 
         //Retrieve Datagram
+        memset(&queryAddr, '0', sizeof(queryAddr));
         queryAddr.sin_addr.s_addr = inet_addr(buffer);
-        queryHost = gethostbyaddr((char*)&queryAddr.sin_addr, 4, AF_INET);
+        //queryHost = gethostbyaddr((char*)&queryAddr.sin_addr, 4, AF_INET);
         queryHost = gethostbyname(buffer);
-        printf("IP Address: \n");
-        for(int i = 0; queryHost->h_addr_list[i]; i++)  {
-            puts(inet_ntoa(*(struct in_addr*)queryHost->h_addr_list[i]));
+        if(queryHost) {
+            printf("IP Address: \n");
+            for(int i = 0; queryHost->h_addr_list[i]; i++)  {
+                puts(inet_ntoa(*(struct in_addr*)queryHost->h_addr_list[i]));
+            }
+            fputc('\n', stdout);
+        } else {
+            printf("No host...");
         }
-        fputc('\n', stdout);
+        
 
         /** Send Input Back to Client **/
         n = sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr*)&clientAddr, clientLength);
