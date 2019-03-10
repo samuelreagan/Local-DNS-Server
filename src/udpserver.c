@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
 
         //Retrieve Datagram
         queryAddr.sin_addr.s_addr = inet_addr(buffer);
-        //queryHost = gethostbyaddr((char*)&queryAddr.sin_addr, 4, AF_INET);
+        queryHost = gethostbyaddr((char*)&queryAddr.sin_addr, 4, AF_INET);
         queryHost = gethostbyname(buffer);
         printf("IP Address: \n");
         for(int i = 0; queryHost->h_addr_list[i]; i++)  {
