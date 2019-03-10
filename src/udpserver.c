@@ -24,8 +24,11 @@ int main(int argc, char** argv) {
     struct sockaddr_in serverAddr;
     struct sockaddr_in clientAddr;
     struct hostent* client;
-    char buffer[BUFFER_SIZE];
-    char* hostAddr;
+    char   buffer[BUFFER_SIZE];
+    char*  hostAddr;
+    //Added Lines Below
+    struct sockaddr_in queryAddr;
+    struct hostent     *queryHost;
 
     /** Check for Host Name and Port Number **/
     if(argc != 2) {
@@ -81,6 +84,14 @@ int main(int argc, char** argv) {
         //Check Cache
 
         //Retrieve Datagram
+        queryAddr.sin_addr.s_addr = inet_addr(buffer);
+        //queryHost = gethostbyaddr((char*)&queryAddr.sin_addr, 4, AF_INET);
+        queryHost = gethostbyname(buffer);
+        printf("IP Address: \n");
+        for(int i = 0; queryHost->h_addr_list[i]; i++)  {
+            puts(inet_ntoa(*(struct in_addr*)queryHost->h_addr_list[i]));
+        }
+        fputc('\n', stdout);
 
         printf("Server Received Datagram From: %s (%s)\n",client->h_name, hostAddr);
         //printf("Client Port Number: %d\n",clientAddr.sin_port);
