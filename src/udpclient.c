@@ -26,6 +26,7 @@ int main(int argc, char** argv) {
     struct hostent* server;
     char* hostName;
     char buffer[BUFFER_SIZE];
+    char receiveBuffer[BUFFER_SIZE];
 
     /** Check for Host Name and Port Number **/
     if(argc != 3) {
@@ -81,8 +82,9 @@ int main(int argc, char** argv) {
         error("Error Sending Message to the Server (sendto).");
     }
 
+
     /** Receive Message from Server **/
-    n = recvfrom(sockfd, buffer, strlen(buffer), 0, (struct sockaddr*)&serverAddr, &serverLength);
+    n = recvfrom(sockfd, receiveBuffer, strlen(receiveBuffer), 0, (struct sockaddr*)&serverAddr, &serverLength);
     if(n < 0) {
         error("Error in Receiving Message from the Server (recvfrom).");
     }

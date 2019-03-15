@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -17,6 +18,7 @@ const int BUFFER_SIZE = 1024;
 
 /** Function Prototypes **/
 void error(char* msg);
+char* trim(char* str, int* length);
 
 int main(int argc, char** argv) {
     int sockfd, portNumber, optVal, n;
@@ -88,17 +90,22 @@ int main(int argc, char** argv) {
         //Check Cache
 
         //Retrieve Datagram
+	int bufferLength = strlen(buffer);
+	char* trimmed = trim(buffer, &bufferLength);
+	char* ipAddress;
+	memcpy(buffer, trimmed, bufferLength);
         memset(&queryAddr, '0', sizeof(queryAddr));
         queryAddr.sin_addr.s_addr = inet_addr(buffer);
         printf("sin_addr.s_addr: %u", inet_addr(buffer));
         //queryHost = gethostbyaddr((char*)&queryAddr.sin_addr, 4, AF_INET);
         queryHost = gethostbyname(buffer);
-        printf("%s",queryHost);
         if(queryHost) {
             printf("IP Address: \n");
-            for(int i = 0; queryHost->h_addr_list[i]; i++)  {
+	    ipAddress = inet_ntoa(*(struct in_addr*)queryHost->h_addr_list[0]);
+	    puts(ipAddress);
+           /* for(int i = 0; queryHost->h_addr_list[i]; i++)  {
                 puts(inet_ntoa(*(struct in_addr*)queryHost->h_addr_list[i]));
-            }
+            }*/
             fputc('\n', stdout);
         } else {
             printf("No host...");
@@ -106,7 +113,7 @@ int main(int argc, char** argv) {
         
 
         /** Send Input Back to Client **/
-        n = sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr*)&clientAddr, clientLength);
+        n = sendto(sockfd, ipAddress, strlen(ipAddress), 0, (struct sockaddr*)&clientAddr, clientLength);
         if(n < 0) {
             error("Error in Sending Message to the Client (sendto).");
         }
@@ -126,3 +133,29 @@ void error(char* msg) {
     perror(msg);
     exit(0);
 }
+
+char* trim(char* str, int* length) {
+    char* end;
+
+    // Trim Beginning Whitespace
+    while(isspace((unsigned char)*str)) {
+        str++;
+	(*length)--;
+    }
+
+    // Trim Ending Whitespace
+    if(*str != 0) {
+	end = str + strlen(str) - 1;
+	while(end > str && isspace((unsigned char)*end)) {
+	    end--;
+	    (*length)--;
+	}
+
+        // Add Null Terminator, Update Length
+   	*(end + 1) = '\0';
+    	(*length)++;
+    }
+
+    return str;
+}    
+
