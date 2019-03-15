@@ -90,10 +90,10 @@ int main(int argc, char** argv) {
         //Retrieve Datagram
         memset(&queryAddr, '0', sizeof(queryAddr));
         queryAddr.sin_addr.s_addr = inet_addr(buffer);
-        printf("sin_addr.s_addr: %u", inet_addr(buffer));
+        //printf("sin_addr.s_addr: %u", inet_addr(buffer));
         //queryHost = gethostbyaddr((char*)&queryAddr.sin_addr, 4, AF_INET);
         queryHost = gethostbyname(buffer);
-        printf("%s",queryHost);
+        //printf("%s",queryHost);
         if(queryHost) {
             printf("IP Address: \n");
             for(int i = 0; queryHost->h_addr_list[i]; i++)  {
