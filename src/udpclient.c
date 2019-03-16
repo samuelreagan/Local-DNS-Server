@@ -1,6 +1,11 @@
 /**
  * A simple UDP client.
  * Usage: udpclient <host> <port>
+ * 
+ * Samuel Reagan
+ * March 15, 2019
+ * D.Kim
+ * CS 4313
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,13 +24,14 @@ const int SRC_PORT    = 6010;
 void error(char* msg);
 
 int main(int argc, char** argv) {
-    int sockfd, portNumber, n;
-    unsigned int serverLength;
-    struct sockaddr_in serverAddr;
-    struct sockaddr_in clientAddr;
-    struct hostent* server;
-    char* hostName;
-    char buffer[BUFFER_SIZE];
+    int                sockfd, portNumber, n;
+    unsigned int       serverLength;
+    struct sockaddr_in serverAddr;                 //Server's Address Record
+    struct sockaddr_in clientAddr;                 //Client's Address Record
+    struct             hostent* server;            //Server DNS Info
+    char*              hostName;                   //Hostname for Client
+    char               buffer[BUFFER_SIZE];        //Buffer for input from client
+    char               receiveBuffer[BUFFER_SIZE]; //Buffer for output from server
 
     /** Check for Host Name and Port Number **/
     if(argc != 3) {
@@ -69,10 +75,14 @@ int main(int argc, char** argv) {
     bcopy((char*)server->h_addr, (char*)&serverAddr.sin_addr.s_addr, server->h_length);
     serverAddr.sin_port = htons(portNumber);
 
-    /** Get A Message from the User **/
+    /** Zero the Arrays **/
     bzero(buffer, BUFFER_SIZE);
-    printf("Please enter hostname: ");
+    memset(receiveBuffer, '0', BUFFER_SIZE);
+
+    /** Get A Message from the User **/
+    printf("\nPlease enter hostname: ");
     fgets(buffer, BUFFER_SIZE, stdin);
+    buffer[strlen(buffer) - 1] = '\0';
 
     /** Send Message to the Server */
     serverLength = sizeof(serverAddr);
@@ -82,13 +92,15 @@ int main(int argc, char** argv) {
     }
 
     /** Receive Message from Server **/
-    n = recvfrom(sockfd, buffer, strlen(buffer), 0, (struct sockaddr*)&serverAddr, &serverLength);
+    n = recvfrom(sockfd, receiveBuffer, (int)strlen(receiveBuffer), 0, (struct sockaddr*)&serverAddr, &serverLength);
     if(n < 0) {
         error("Error in Receiving Message from the Server (recvfrom).");
+    } else {
+        receiveBuffer[n] = '\0';
     }
 
     /** Print the Server's Reply **/
-    printf("%s", buffer);
+    printf("\nIP: %s\n\n", receiveBuffer);
 
     return 0;
 }
