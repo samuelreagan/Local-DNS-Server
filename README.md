@@ -17,5 +17,5 @@ cd src
 - Second, run the client with the hostname that you want to look up and the port number of the running server.
 ```
 cd src
-./udpserver github.com port-number
+./udpclient github.com port-number
 ```
